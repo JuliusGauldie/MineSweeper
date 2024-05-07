@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=Cell
+comment1.params=row\ col
+comment1.target=Cell(int,\ int)
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ Cell\r\n
+comment2.params=isMined
+comment2.target=void\ newGame(boolean)
+comment3.params=
+comment3.target=void\ paint()
+numComments=4

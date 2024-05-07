@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.target=GameBoardPanel
+comment1.params=
+comment1.target=GameBoardPanel()
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ GameBoardPanel\r\n
+comment2.params=
+comment2.target=void\ newGame()
+comment3.params=srcRow\ srcCol
+comment3.target=int\ getSurroundingMines(int,\ int)
+comment4.params=srcRow\ srcCol
+comment4.target=void\ revealCell(int,\ int)
+comment5.params=
+comment5.target=boolean\ hasWon()
+numComments=6
