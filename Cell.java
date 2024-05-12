@@ -18,7 +18,7 @@ public class Cell extends JButton
     
     int row, col; //Row and column number of cell;
     boolean isRevealed; //Check if revealed
-    boolean isMined; //Check if mined
+    boolean isMine; //Check if mine
     boolean isFlagged; //Check if flagged by player
     
     /**
@@ -37,7 +37,7 @@ public class Cell extends JButton
     {
         this.isRevealed = false;
         this.isFlagged = false;
-        this.isMined = isMined;
+        this.isMine = isMine;
         super.setEnabled(true);
         super.setText("");
         paint();

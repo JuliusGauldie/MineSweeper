@@ -19,6 +19,9 @@ public class GameBoardPanel extends JPanel
     public static final int CANVAS_WIDTH = CELL_SIZE * COLS; //Game Board widht/height
     public static final int CANVAS_HEIGHT = CELL_SIZE * ROWS;
     
+    //Mouse Variables
+    CellMouseListener listener = new CellMouseListener();
+    
     Cell cells[][] = new Cell[ROWS][COLS];
     int numMines = 10; //Set number of mines
 
@@ -35,9 +38,12 @@ public class GameBoardPanel extends JPanel
             for (int col = 0; col < COLS; col++)
             {
                 cells[row][col] = new Cell(row, col);
+                cells[row][col].addMouseListener(listener); //On all rows and cols
                 super.add(cells[row][col]);
             }
         }
+        
+        newGame();
         
         super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
     }
@@ -52,7 +58,7 @@ public class GameBoardPanel extends JPanel
         {
             for (int col = 0; col < COLS; col++)
             {
-                cells[row][col].newGame(mineMap.isMined[row][col]);
+                cells[row][col].newGame(mineMap.isMine[row][col]);
             }
         }
     }
@@ -66,7 +72,7 @@ public class GameBoardPanel extends JPanel
             for (int col = srcCol -1; col <= srcCol + 1; col++)
             {
                 if (row >= 0 && row < ROWS && col >= 0 && col < COLS) //Ensure valid cell
-                    if (cells[row][col].isMined) numMines++;
+                    if (cells[row][col].isMine) numMines++;
             }
         }
         
@@ -87,7 +93,7 @@ public class GameBoardPanel extends JPanel
                 for (int col = srcCol -1; col <= srcCol + 1; col++)
                 {
                     if (row >= 0 && row < ROWS && col >= 0 && col < COLS) //Ensure valid cell
-                        if (!cells[row][col].isRevealed) revealCell(row, col);
+                        if (!cells[row][col].isRevealed && !cells[row][col].isFlagged) revealCell(row, col);
                 }
             }
         }
@@ -102,15 +108,34 @@ public class GameBoardPanel extends JPanel
     {
         public void mouseClicked(MouseEvent e) 
         {
-            Cell sourceCell = (Cell)e.getSource();
+            Cell sourceCell = (Cell)e.getSource(); //Get Cell Clicked
             
             if (e.getButton() == MouseEvent.BUTTON1) //Left Mouse Click
             {
-                
+                if (sourceCell.isMine) //If cell is mine
+                {
+                    System.out.println("GAME OVER");
+                    sourceCell.setText("*");
+                }
+                else if (!sourceCell.isFlagged && !sourceCell.isMine)
+                {
+                    System.out.println(sourceCell.row + " " + sourceCell.col);
+                    revealCell(sourceCell.row, sourceCell.col);
+                }
             }
             else if (e.getButton() == MouseEvent.BUTTON3) //Right Mouse Click
             {
-                
+                if (sourceCell.isFlagged)
+                {
+                    sourceCell.isFlagged = false; //If flagged, unflag
+                    cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
+                }          
+                else
+                {
+                    sourceCell.isFlagged = true; //If not flagged, flag
+                    System.out.println(sourceCell.row + " " + sourceCell.col + " " + sourceCell.isFlagged);
+                    cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ public class MineMap
 
     int numMines; //Number of mines
         
-    boolean[][] isMined = new boolean[ROWS][COLS]; //Array for mines
+    boolean[][] isMine = new boolean[ROWS][COLS]; //Array for mines
         
     /**
      * Constructor for objects of class MineMap
@@ -28,15 +28,17 @@ public class MineMap
         this.numMines = numMines;
         
         //For testing, assume numMines == 10
-        isMined[0][0] = true;
-        isMined[5][2] = true;
-        isMined[9][5] = true;
-        isMined[6][7] = true;
-        isMined[8][2] = true;
-        isMined[2][4] = true;
-        isMined[5][7] = true;
-        isMined[7][7] = true;
-        isMined[3][6] = true;
-        isMined[4][8] = true;
+        isMine[0][0] = true;
+        isMine[5][2] = true;
+        isMine[9][5] = true;
+        isMine[6][7] = true;
+        isMine[8][2] = true;
+        isMine[2][4] = true;
+        isMine[5][7] = true;
+        isMine[7][7] = true;
+        isMine[3][6] = true;
+        isMine[4][8] = true;
+        
+        System.out.println("Mines Coded: " + numMines);
     }
 }
