@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 07/05/24
+ * @version 14/05/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -43,8 +43,6 @@ public class GameBoardPanel extends JPanel
             }
         }
         
-        newGame();
-        
         super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
     }
     
@@ -70,9 +68,11 @@ public class GameBoardPanel extends JPanel
         for (int row = srcRow -1; row <= srcRow + 1; row++)
         {
             for (int col = srcCol -1; col <= srcCol + 1; col++)
-            {
+            { 
                 if (row >= 0 && row < ROWS && col >= 0 && col < COLS) //Ensure valid cell
-                    if (cells[row][col].isMine) numMines++;
+                {
+                    if (cells[row][col].isMine) numMines++;    
+                }
             }
         }
         
@@ -112,14 +112,13 @@ public class GameBoardPanel extends JPanel
             
             if (e.getButton() == MouseEvent.BUTTON1) //Left Mouse Click
             {
-                if (sourceCell.isMine) //If cell is mine
+                if (sourceCell.isMine && !sourceCell.isFlagged) //If cell is mine and not flagged
                 {
                     System.out.println("GAME OVER");
                     sourceCell.setText("*");
                 }
                 else if (!sourceCell.isFlagged && !sourceCell.isMine)
                 {
-                    System.out.println(sourceCell.row + " " + sourceCell.col);
                     revealCell(sourceCell.row, sourceCell.col);
                 }
             }
@@ -128,12 +127,13 @@ public class GameBoardPanel extends JPanel
                 if (sourceCell.isFlagged)
                 {
                     sourceCell.isFlagged = false; //If flagged, unflag
+                    cells[sourceCell.row][sourceCell.col].isRevealed = false;
                     cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
                 }          
                 else
                 {
                     sourceCell.isFlagged = true; //If not flagged, flag
-                    System.out.println(sourceCell.row + " " + sourceCell.col + " " + sourceCell.isFlagged);
+                    cells[sourceCell.row][sourceCell.col].isRevealed = true;
                     cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
                 }
             }

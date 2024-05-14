@@ -3,7 +3,7 @@
  * Write a description of class Cell here.
  *
  * @author Julius Gauldie
- * @version 07/05/24
+ * @version 14/05/24
  */
 import java.awt.Color;
 import java.awt.Font;
@@ -33,7 +33,7 @@ public class Cell extends JButton
         super.setFont(FONT_NUMBERS); //Set font of JButton
     }
     
-    public void newGame(boolean isMined)
+    public void newGame(boolean isMine)
     {
         this.isRevealed = false;
         this.isFlagged = false;

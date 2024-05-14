@@ -3,7 +3,7 @@
  * Write a description of class MineMap here.
  *
  * @author Julius Gauldie
- * @version 07/05/24
+ * @version 14/05/24
  */
 public class MineMap
 {
@@ -39,6 +39,9 @@ public class MineMap
         isMine[3][6] = true;
         isMine[4][8] = true;
         
-        System.out.println("Mines Coded: " + numMines);
+        //Update Flags Info Panel
+        
+        InfoBoardPanel infoPanel = new InfoBoardPanel();
+        infoPanel.ResetFlags(); 
     }
 }
