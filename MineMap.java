@@ -3,7 +3,7 @@
  * Write a description of class MineMap here.
  *
  * @author Julius Gauldie
- * @version 14/05/24
+ * @version 16/05/24
  */
 public class MineMap
 {
@@ -14,13 +14,16 @@ public class MineMap
     int numMines; //Number of mines
         
     boolean[][] isMine = new boolean[ROWS][COLS]; //Array for mines
+    
+    InfoBoardPanel infoPanel;
         
     /**
      * Constructor for objects of class MineMap
      */
-    public MineMap()
+    public MineMap(InfoBoardPanel infoPanel)
     {
         super();
+        this.infoPanel = infoPanel;
     }
     
     public void newMineMap(int numMines) 
@@ -40,8 +43,6 @@ public class MineMap
         isMine[4][8] = true;
         
         //Update Flags Info Panel
-        
-        InfoBoardPanel infoPanel = new InfoBoardPanel();
-        infoPanel.ResetFlags(); 
+        infoPanel.resetFlags(numMines); 
     }
 }

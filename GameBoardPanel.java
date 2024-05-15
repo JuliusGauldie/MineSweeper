@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 14/05/24
+ * @version 16/05/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -24,6 +24,8 @@ public class GameBoardPanel extends JPanel
     
     Cell cells[][] = new Cell[ROWS][COLS];
     int numMines = 10; //Set number of mines
+    
+    InfoBoardPanel infoPanel;
 
     /**
      * Constructor for objects of class GameBoardPanel
@@ -48,7 +50,7 @@ public class GameBoardPanel extends JPanel
     
     public void newGame() //Reset game
     {
-        MineMap mineMap = new MineMap(); //Reset bombs
+        MineMap mineMap = new MineMap(infoPanel); //Reset bombs
         mineMap.newMineMap(numMines);
         
         //Reset rest
@@ -124,19 +126,28 @@ public class GameBoardPanel extends JPanel
             }
             else if (e.getButton() == MouseEvent.BUTTON3) //Right Mouse Click
             {
-                if (sourceCell.isFlagged)
+                if (sourceCell.isFlagged) //Unflag
                 {
                     sourceCell.isFlagged = false; //If flagged, unflag
                     cells[sourceCell.row][sourceCell.col].isRevealed = false;
                     cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
+ 
+                    infoPanel.increaseFlag();
                 }          
-                else
+                else //Flag
                 {
                     sourceCell.isFlagged = true; //If not flagged, flag
                     cells[sourceCell.row][sourceCell.col].isRevealed = true;
                     cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
+                    
+                    infoPanel.decreaseFlag();
                 }
             }
         }
+    }
+    
+    public void passInfoBoardPanel(InfoBoardPanel panel)
+    {
+        this.infoPanel = panel;
     }
 }

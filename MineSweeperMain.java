@@ -3,7 +3,7 @@
  * Write a description of class MineSweeperMain here.
  *
  * @author Julius Gauldie
- * @version 14/05/2024
+ * @version 16/05/2024
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -25,6 +25,7 @@ public class MineSweeperMain extends JFrame
         cp.add(infoBoard, BorderLayout.NORTH);
         cp.add(gameBoard, BorderLayout.CENTER);
         
+        gameBoard.passInfoBoardPanel(infoBoard);
         gameBoard.newGame();
         
         pack();

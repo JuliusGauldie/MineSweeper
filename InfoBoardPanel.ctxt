@@ -2,7 +2,10 @@
 comment0.target=InfoBoardPanel
 comment1.params=
 comment1.target=InfoBoardPanel()
-comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ InfoBoardPanel\r\n
-comment2.params=
-comment2.target=void\ ResetFlags()
-numComments=3
+comment2.params=mines
+comment2.target=void\ resetFlags(int)
+comment3.params=
+comment3.target=void\ increaseFlag()
+comment4.params=
+comment4.target=void\ decreaseFlag()
+numComments=5

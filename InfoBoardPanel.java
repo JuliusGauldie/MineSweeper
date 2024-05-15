@@ -3,31 +3,33 @@
  * Write a description of class InfoBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 14/05/24
+ * @version 16/05/24
  */
 import java.awt.*;
 import javax.swing.*;
-public class InfoBoardPanel extends JPanel
-{
-    // instance variables - replace the example below with your own
-    private int amountOfFlags = 0;
-    private int currentTime = 0;
-    
-     JLabel l1 = new JLabel(" "); 
 
-    /**
-     * Constructor for objects of class InfoBoardPanel
-     */
-    public InfoBoardPanel()
-    {
+public class InfoBoardPanel extends JPanel {
+    private int amountOfFlags = 0;
+    private JLabel flagCount = new JLabel();
+
+    public InfoBoardPanel() {
         super.setLayout(new GridLayout(1, 1, 1, 1));
-        l1.setText("AMOUNT OF FLAGS LEFT: " + amountOfFlags);  
-        super.add(l1);
+        flagCount.setText("FLAGS LEFT: " + amountOfFlags);
+        super.add(flagCount);
     }
-    
-    public void ResetFlags()
-    {
-        System.out.println("check");
-        l1.setText("TEST");
+
+    public void resetFlags(int mines) {
+        amountOfFlags = mines;
+        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Reset flags for new game
+    }
+
+    public void increaseFlag() {
+        amountOfFlags++;
+        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Increase flags with one
+    }
+
+    public void decreaseFlag() {
+        amountOfFlags--;
+        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Decrease flags with one
     }
 }
