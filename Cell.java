@@ -3,7 +3,7 @@
  * Write a description of class Cell here.
  *
  * @author Julius Gauldie
- * @version 14/05/24
+ * @version 21/05/24
  */
 import java.awt.Color;
 import java.awt.Font;

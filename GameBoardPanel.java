@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 16/05/24
+ * @version 21/05/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -26,13 +26,17 @@ public class GameBoardPanel extends JPanel
     int numMines = 10; //Set number of mines
     
     InfoBoardPanel infoPanel;
+    WinBoardPanel winPanel;
+    
+    private boolean gameOver = false;
+    private boolean gameWon = false;
 
     /**
      * Constructor for objects of class GameBoardPanel
      */
     public GameBoardPanel()
-    {
-        super.setLayout(new GridLayout(ROWS, COLS, 2, 2)); //JPanel
+    { 
+         super.setLayout(new GridLayout(ROWS, COLS, 2, 2)); //JPanel
         
         //Populate array
         for (int row = 0; row < ROWS; row++)
@@ -52,6 +56,9 @@ public class GameBoardPanel extends JPanel
     {
         MineMap mineMap = new MineMap(infoPanel); //Reset bombs
         mineMap.newMineMap(numMines);
+        
+        gameOver = false;
+        gameWon = false;
         
         //Reset rest
         for (int row = 0; row < ROWS; row++)
@@ -114,40 +121,81 @@ public class GameBoardPanel extends JPanel
             
             if (e.getButton() == MouseEvent.BUTTON1) //Left Mouse Click
             {
-                if (sourceCell.isMine && !sourceCell.isFlagged) //If cell is mine and not flagged
+                if (!gameOver && !gameWon)
                 {
-                    System.out.println("GAME OVER");
-                    sourceCell.setText("*");
-                }
-                else if (!sourceCell.isFlagged && !sourceCell.isMine)
-                {
-                    revealCell(sourceCell.row, sourceCell.col);
+                    if (sourceCell.isMine && !sourceCell.isFlagged) //If cell is mine and not flagged
+                    {
+                        gameOver();
+                        gameOver = true;
+                        sourceCell.setText("*");
+                    }
+                    else if (!sourceCell.isFlagged && !sourceCell.isMine)
+                    {
+                        revealCell(sourceCell.row, sourceCell.col);
+                    }
                 }
             }
             else if (e.getButton() == MouseEvent.BUTTON3) //Right Mouse Click
             {
-                if (sourceCell.isFlagged) //Unflag
+                if (!gameOver && !gameWon)
                 {
-                    sourceCell.isFlagged = false; //If flagged, unflag
-                    cells[sourceCell.row][sourceCell.col].isRevealed = false;
-                    cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
+                    if (sourceCell.isFlagged) //Unflag
+                    {
+                        sourceCell.isFlagged = false; //If flagged, unflag
+                        cells[sourceCell.row][sourceCell.col].isRevealed = false;
+                        cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
  
-                    infoPanel.increaseFlag();
-                }          
-                else //Flag
-                {
-                    sourceCell.isFlagged = true; //If not flagged, flag
-                    cells[sourceCell.row][sourceCell.col].isRevealed = true;
-                    cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
+                        infoPanel.increaseFlag();
+                    }          
+                    else //Flag
+                    {
+                        sourceCell.isFlagged = true; //If not flagged, flag
+                        cells[sourceCell.row][sourceCell.col].isRevealed = true;
+                        cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
                     
-                    infoPanel.decreaseFlag();
+                        infoPanel.decreaseFlag();
+                    }
                 }
+            }
+            else if (e.getButton() == MouseEvent.BUTTON2) //Middle Mouse Button Click
+            {
+                if (!gameWon) gameWin();
+                gameWon = true;
+            }
+            
+            if (infoPanel.amountOfFlags == 0) //Win Condition
+            {
+                boolean allRevealed = true;
+                
+                for (int row = 0; row < ROWS; row++)
+                {
+                    for (int col = 0; col < COLS; col++)
+                    {
+                        if (!cells[row][col].isRevealed)
+                        {
+                            allRevealed = false;
+                        }
+                    }
+                }
+                
+                if (allRevealed) gameWin();
             }
         }
     }
     
-    public void passInfoBoardPanel(InfoBoardPanel panel)
+    public void gameWin()
+    {        
+        winPanel.changeVisibility(true);
+    }
+    
+    public void gameOver()
     {
-        this.infoPanel = panel;
+        
+    }
+    
+    public void passPanels(InfoBoardPanel infoPanel, WinBoardPanel winPanel)
+    {
+        this.infoPanel = infoPanel;
+        this.winPanel = winPanel;
     }
 }

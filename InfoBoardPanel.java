@@ -9,7 +9,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class InfoBoardPanel extends JPanel {
-    private int amountOfFlags = 0;
+    public int amountOfFlags = 0;
     private JLabel flagCount = new JLabel();
 
     public InfoBoardPanel() {
