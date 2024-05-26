@@ -1,8 +1,0 @@
-#BlueJ class context
-comment0.target=WinBoardPanel
-comment1.params=
-comment1.target=WinBoardPanel()
-comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ WinPanel\r\n
-comment2.params=shouldBeVisible
-comment2.target=void\ changeVisibility(boolean)
-numComments=3

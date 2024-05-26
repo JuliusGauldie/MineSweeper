@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 21/05/24
+ * @version 27/05/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -24,9 +24,9 @@ public class GameBoardPanel extends JPanel
     
     Cell cells[][] = new Cell[ROWS][COLS];
     int numMines = 10; //Set number of mines
-    
+
+    MineSweeperMain main;
     InfoBoardPanel infoPanel;
-    WinBoardPanel winPanel;
     
     private boolean gameOver = false;
     private boolean gameWon = false;
@@ -36,20 +36,28 @@ public class GameBoardPanel extends JPanel
      */
     public GameBoardPanel()
     { 
-         super.setLayout(new GridLayout(ROWS, COLS, 2, 2)); //JPanel
+        super.setLayout(new BorderLayout()); //JPanel
+        
+        EndBoardPanel endPanel = new EndBoardPanel();
+        endPanel.setVisible(false);
         
         //Populate array
+        JPanel tempGamePanel = new JPanel(new GridLayout(ROWS, COLS, 2, 2));
+        tempGamePanel.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); 
         for (int row = 0; row < ROWS; row++)
         {
             for (int col = 0; col < COLS; col++)
             {
                 cells[row][col] = new Cell(row, col);
                 cells[row][col].addMouseListener(listener); //On all rows and cols
-                super.add(cells[row][col]);
+                tempGamePanel.add(cells[row][col]);
             }
         }
         
-        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+        super.add(tempGamePanel, BorderLayout.CENTER);
+        
+        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); 
+        super.add(endPanel, BorderLayout.CENTER);
     }
     
     public void newGame() //Reset game
@@ -108,11 +116,6 @@ public class GameBoardPanel extends JPanel
         }
     }
     
-    public boolean hasWon() 
-    {
-        return true;
-    }
-    
     private class CellMouseListener extends MouseAdapter
     {
         public void mouseClicked(MouseEvent e) 
@@ -160,7 +163,6 @@ public class GameBoardPanel extends JPanel
             else if (e.getButton() == MouseEvent.BUTTON2) //Middle Mouse Button Click
             {
                 if (!gameWon) gameWin();
-                gameWon = true;
             }
             
             if (infoPanel.amountOfFlags == 0) //Win Condition
@@ -185,7 +187,8 @@ public class GameBoardPanel extends JPanel
     
     public void gameWin()
     {        
-        winPanel.changeVisibility(true);
+        gameWon = true;
+        
     }
     
     public void gameOver()
@@ -193,9 +196,11 @@ public class GameBoardPanel extends JPanel
         
     }
     
-    public void passPanels(InfoBoardPanel infoPanel, WinBoardPanel winPanel)
+    public void passPanels(InfoBoardPanel infoPanel, MineSweeperMain main)
     {
         this.infoPanel = infoPanel;
-        this.winPanel = winPanel;
+        this.main = main;
+        
+        infoPanel.passPanel(this);
     }
 }

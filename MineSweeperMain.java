@@ -2,7 +2,7 @@
  * Write a description of class MineSweeperMain here.
  *
  * @author Julius Gauldie
- * @version 21/05/2024
+ * @version 27/05/2024
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -11,9 +11,7 @@ public class MineSweeperMain extends JFrame
 {
     GameBoardPanel gameBoard = new GameBoardPanel();
     InfoBoardPanel infoBoard = new InfoBoardPanel();
-    WinBoardPanel winBoard = new WinBoardPanel();
-    
-    JButton btnNewgame = new JButton("New Game");
+
     /**
      * Constructor for objects of class MineSweeperMain
      */
@@ -23,10 +21,11 @@ public class MineSweeperMain extends JFrame
         cp.setLayout(new BorderLayout());
         
         cp.add(infoBoard, BorderLayout.NORTH);
-        cp.add(winBoard, BorderLayout.CENTER);
+
         cp.add(gameBoard, BorderLayout.SOUTH);
         
-        gameBoard.passPanels(infoBoard, winBoard);
+        
+        gameBoard.passPanels(infoBoard, this);
         gameBoard.newGame();
         
         pack();
