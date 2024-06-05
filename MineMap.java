@@ -3,8 +3,9 @@
  * Write a description of class MineMap here.
  *
  * @author Julius Gauldie
- * @version 16/05/24
+ * @version 06/06/24
  */
+import java.util.Random;
 public class MineMap
 {
     MineSweeperConstants constants = new MineSweeperConstants();
@@ -30,18 +31,30 @@ public class MineMap
     {
         this.numMines = numMines;
         
-        //For testing, assume numMines == 10
-        isMine[0][0] = true;
-        isMine[5][2] = true;
-        isMine[9][5] = true;
-        isMine[6][7] = true;
-        isMine[8][2] = true;
-        isMine[2][4] = true;
-        isMine[5][7] = true;
-        isMine[7][7] = true;
-        isMine[3][6] = true;
-        isMine[4][8] = true;
+        //Clear all existing mines
+        for (int i = 0; i < ROWS; i++)
+        {
+            for (int j = 0; j < COLS; j++)
+            {
+                isMine[i][j] = false;
+            }
+        }
         
+        Random rand = new Random();
+        
+        //Place random mines
+        for (int i = 0; i < numMines; i++)
+        {
+            int randomRow = rand.nextInt(ROWS);
+            int randomCol = rand.nextInt(COLS);
+            
+            if (!isMine[randomRow][randomCol])
+            {
+                isMine[randomRow][randomCol] = true;
+            }
+            else i--;
+        }
+  
         //Update Flags Info Panel
         infoPanel.resetFlags(numMines); 
     }

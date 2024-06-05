@@ -2,6 +2,4 @@
 comment0.target=EndBoardPanel
 comment1.params=
 comment1.target=EndBoardPanel()
-comment2.params=message
-comment2.target=void\ setMessage(java.lang.String)
-numComments=3
+numComments=2

@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 27/05/24
+ * @version 06/06/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -27,6 +27,7 @@ public class GameBoardPanel extends JPanel
 
     MineSweeperMain main;
     InfoBoardPanel infoPanel;
+    private EndBoardPanel endPanel;
     
     private boolean gameOver = false;
     private boolean gameWon = false;
@@ -34,34 +35,43 @@ public class GameBoardPanel extends JPanel
     /**
      * Constructor for objects of class GameBoardPanel
      */
-    public GameBoardPanel()
-    { 
-        super.setLayout(new BorderLayout()); //JPanel
-        
-        EndBoardPanel endPanel = new EndBoardPanel();
-        endPanel.setVisible(false);
-        
-        //Populate array
+    public GameBoardPanel() 
+    {
+        super.setLayout(new BorderLayout()); // Set layout manager
+
+        // Create a layered pane
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+
+        // Create and add the game panel to the default layer
         JPanel tempGamePanel = new JPanel(new GridLayout(ROWS, COLS, 2, 2));
-        tempGamePanel.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); 
-        for (int row = 0; row < ROWS; row++)
-        {
-            for (int col = 0; col < COLS; col++)
-            {
+        tempGamePanel.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); 
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
                 cells[row][col] = new Cell(row, col);
-                cells[row][col].addMouseListener(listener); //On all rows and cols
+                cells[row][col].addMouseListener(listener);
                 tempGamePanel.add(cells[row][col]);
             }
         }
-        
-        super.add(tempGamePanel, BorderLayout.CENTER);
-        
-        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); 
-        super.add(endPanel, BorderLayout.CENTER);
+        layeredPane.add(tempGamePanel, JLayeredPane.DEFAULT_LAYER); // Add game panel to default layer
+
+        // Create and add the end panel to a higher layer
+        endPanel = new EndBoardPanel();
+        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * CELL_SIZE), (CANVAS_HEIGHT / 2) - (2  * CELL_SIZE), CELL_SIZE * 4, CELL_SIZE * 4);
+        endPanel.setVisible(false);
+        layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
+
+        super.add(layeredPane, BorderLayout.CENTER); // Add layered pane to center
+
+        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); // Set preferred size
     }
-    
+
     public void newGame() //Reset game
     {
+        endPanel.setVisible(false);
+        repaint();
+        revalidate();
+        
         MineMap mineMap = new MineMap(infoPanel); //Reset bombs
         mineMap.newMineMap(numMines);
         
@@ -188,7 +198,9 @@ public class GameBoardPanel extends JPanel
     public void gameWin()
     {        
         gameWon = true;
-        
+        endPanel.setVisible(true);
+        repaint();
+        revalidate();
     }
     
     public void gameOver()
