@@ -2,7 +2,6 @@
 comment0.target=MineMap
 comment1.params=infoPanel
 comment1.target=MineMap(InfoBoardPanel)
-comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ MineMap\r\n
-comment2.params=numMines
-comment2.target=void\ newMineMap(int)
+comment2.params=panel\ numMines\ firstClickedRow\ firstClickedCol
+comment2.target=void\ newMineMap(MainBoardPanel,\ int,\ int,\ int)
 numComments=3

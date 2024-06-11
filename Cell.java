@@ -3,7 +3,7 @@
  * Write a description of class Cell here.
  *
  * @author Julius Gauldie
- * @version 21/05/24
+ * @version 11/06/24
  */
 import java.awt.Color;
 import java.awt.Font;
@@ -20,13 +20,13 @@ public class Cell extends JButton
     boolean isRevealed; //Check if revealed
     boolean isMine; //Check if mine
     boolean isFlagged; //Check if flagged by player
-    
+
     /**
      * Constructor for objects of class Cell
      */
     public Cell(int row, int col)
     {
-        super(); //JTextField
+        super(); 
         this.row = row;
         this.col = col;
         
@@ -41,6 +41,11 @@ public class Cell extends JButton
         super.setEnabled(true);
         super.setText("");
         paint();
+    }
+    
+    public void setMine(boolean isMine) 
+    {
+        this.isMine = isMine;
     }
 
     public void paint()

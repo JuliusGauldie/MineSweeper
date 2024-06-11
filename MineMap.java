@@ -3,59 +3,62 @@
  * Write a description of class MineMap here.
  *
  * @author Julius Gauldie
- * @version 06/06/24
+ * @version 11/06/24
  */
 import java.util.Random;
-public class MineMap
-{
+public class MineMap {
     MineSweeperConstants constants = new MineSweeperConstants();
     int ROWS = constants.ROWS;
     int COLS = constants.COLS;
 
-    int numMines; //Number of mines
-        
-    boolean[][] isMine = new boolean[ROWS][COLS]; //Array for mines
-    
+    int numMines; // Number of mines
+    boolean[][] isMine = new boolean[ROWS][COLS]; // Array for mines
     InfoBoardPanel infoPanel;
-        
-    /**
-     * Constructor for objects of class MineMap
-     */
-    public MineMap(InfoBoardPanel infoPanel)
+
+    public MineMap(InfoBoardPanel infoPanel) 
     {
-        super();
         this.infoPanel = infoPanel;
     }
-    
-    public void newMineMap(int numMines) 
+
+    public void newMineMap(MainBoardPanel panel, int numMines, int firstClickedRow, int firstClickedCol) 
     {
         this.numMines = numMines;
         
-        //Clear all existing mines
-        for (int i = 0; i < ROWS; i++)
-        {
-            for (int j = 0; j < COLS; j++)
-            {
+        // Clear all existing mines
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
                 isMine[i][j] = false;
             }
         }
-        
+
         Random rand = new Random();
-        
-        //Place random mines
-        for (int i = 0; i < numMines; i++)
+
+        // Place random mines
+        for (int i = 0; i < numMines; i++) 
         {
             int randomRow = rand.nextInt(ROWS);
             int randomCol = rand.nextInt(COLS);
-            
-            if (!isMine[randomRow][randomCol])
+
+            if (isMine[randomRow][randomCol] || (Math.abs(randomRow - firstClickedRow) <= 1 && Math.abs(randomCol - firstClickedCol) <= 1))
             {
-                isMine[randomRow][randomCol] = true;
+                i--;
+                continue;
             }
-            else i--;
+
+            isMine[randomRow][randomCol] = true;
         }
-  
-        //Update Flags Info Panel
-        infoPanel.resetFlags(numMines); 
+        
+        for (int row = 0; row < ROWS; row++) 
+        {
+            for (int col = 0; col < COLS; col++) {
+                panel.cells[row][col].setMine(isMine[row][col]);
+            }
+        }
+
+        // Update Flags Info Panel
+        infoPanel.resetFlags(numMines);
+
+        // Reveal First Cell
+        panel.revealCell(firstClickedRow, firstClickedCol);
     }
 }

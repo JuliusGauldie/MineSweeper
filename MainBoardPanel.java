@@ -3,12 +3,12 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 06/06/24
+ * @version 11/06/24
  */
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-public class GameBoardPanel extends JPanel
+public class MainBoardPanel extends JPanel
 {
     //Import MineSweeper Constants
     public static final int ROWS = 10; //Number of rows
@@ -22,38 +22,56 @@ public class GameBoardPanel extends JPanel
     //Mouse Variables
     CellMouseListener listener = new CellMouseListener();
     
-    Cell cells[][] = new Cell[ROWS][COLS];
+    public Cell cells[][] = new Cell[ROWS][COLS];
     int numMines = 10; //Set number of mines
 
     MineSweeperMain main;
     InfoBoardPanel infoPanel;
     private EndBoardPanel endPanel;
-    
+    private MineMap mineMap;
+    private MainBoardPanel thisPanel = this;
+
+    private boolean gameStarted = false;
     private boolean gameOver = false;
     private boolean gameWon = false;
+    
+    private JPanel mainMenuPanel;
+    private JButton startButton;
 
     /**
      * Constructor for objects of class GameBoardPanel
      */
-    public GameBoardPanel() 
+    public MainBoardPanel() 
     {
-        super.setLayout(new BorderLayout()); // Set layout manager
+        super(new CardLayout()); // Use CardLayout for the panel
 
-        // Create a layered pane
+        // Create main menu panel
+        mainMenuPanel = new JPanel(new BorderLayout());
+        startButton = new JButton("Start Game");
+        startButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                newGame();
+                CardLayout cl = (CardLayout) (MainBoardPanel.this.getLayout());
+                cl.show(MainBoardPanel.this, "GamePanel"); // Switch to the game panel
+            }
+        });
+        mainMenuPanel.add(startButton, BorderLayout.CENTER);
+
+        // Create game layered pane
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
-        // Create and add the game panel to the default layer
-        JPanel tempGamePanel = new JPanel(new GridLayout(ROWS, COLS, 2, 2));
-        tempGamePanel.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT); 
+        // Create game panel
+        JPanel gamePanel = new JPanel(new GridLayout(ROWS, COLS, 2, 2));
+        gamePanel.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 cells[row][col] = new Cell(row, col);
                 cells[row][col].addMouseListener(listener);
-                tempGamePanel.add(cells[row][col]);
+                gamePanel.add(cells[row][col]);
             }
         }
-        layeredPane.add(tempGamePanel, JLayeredPane.DEFAULT_LAYER); // Add game panel to default layer
+        layeredPane.add(gamePanel, JLayeredPane.DEFAULT_LAYER); // Add game panel to default layer
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
@@ -61,22 +79,40 @@ public class GameBoardPanel extends JPanel
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
-        super.add(layeredPane, BorderLayout.CENTER); // Add layered pane to center
+        // Add main menu panel and game layered pane to the card layout
+        super.add(mainMenuPanel, "MainMenu");
+        super.add(layeredPane, "GamePanel");
 
-        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT)); // Set preferred size
+        // Set the preferred size of the main board panel
+        super.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
     }
-
+    
+    public void passPanels(InfoBoardPanel panel, MineSweeperMain main)
+    {
+        this.infoPanel = panel;
+        this.main = main;
+        
+        infoPanel.passPanel(this);
+        mineMap = new MineMap(infoPanel);
+    }
+    
     public void newGame() //Reset game
     {
         endPanel.setVisible(false);
         repaint();
         revalidate();
         
-        MineMap mineMap = new MineMap(infoPanel); //Reset bombs
-        mineMap.newMineMap(numMines);
-        
+        gameStarted = false;
         gameOver = false;
         gameWon = false;
+        
+        for (int row = 0; row < ROWS; row++)
+        {
+            for (int col = 0; col < COLS; col++)
+            {
+                cells[row][col].isMine = false;
+            }
+        }
         
         //Reset rest
         for (int row = 0; row < ROWS; row++)
@@ -106,7 +142,7 @@ public class GameBoardPanel extends JPanel
         return numMines;
     }
     
-    private void revealCell(int srcRow, int srcCol)
+    public void revealCell(int srcRow, int srcCol)
     {
         int numMines = getSurroundingMines(srcRow, srcCol);
         cells[srcRow][srcCol].setText(numMines + "");
@@ -133,13 +169,12 @@ public class GameBoardPanel extends JPanel
             Cell sourceCell = (Cell)e.getSource(); //Get Cell Clicked
             
             if (e.getButton() == MouseEvent.BUTTON1) //Left Mouse Click
-            {
-                if (!gameOver && !gameWon)
-                {
+            {                    
+                if (!gameOver && !gameWon && gameStarted)
+                { 
                     if (sourceCell.isMine && !sourceCell.isFlagged) //If cell is mine and not flagged
                     {
                         gameOver();
-                        gameOver = true;
                         sourceCell.setText("*");
                     }
                     else if (!sourceCell.isFlagged && !sourceCell.isMine)
@@ -147,10 +182,19 @@ public class GameBoardPanel extends JPanel
                         revealCell(sourceCell.row, sourceCell.col);
                     }
                 }
+                
+                if (!gameStarted) // If first click
+                {
+                    mineMap.newMineMap(thisPanel, numMines, sourceCell.row, sourceCell.col);
+                    gameStarted = true;
+                    
+                    infoPanel.startTimer();
+                }
+                
             }
             else if (e.getButton() == MouseEvent.BUTTON3) //Right Mouse Click
             {
-                if (!gameOver && !gameWon)
+                if (!gameOver && !gameWon && gameStarted)
                 {
                     if (sourceCell.isFlagged) //Unflag
                     {
@@ -201,18 +245,13 @@ public class GameBoardPanel extends JPanel
         endPanel.setVisible(true);
         repaint();
         revalidate();
+        
+        infoPanel.stopTimer();
     }
     
     public void gameOver()
     {
-        
-    }
-    
-    public void passPanels(InfoBoardPanel infoPanel, MineSweeperMain main)
-    {
-        this.infoPanel = infoPanel;
-        this.main = main;
-        
-        infoPanel.passPanel(this);
+        gameOver = true;
+        infoPanel.stopTimer();
     }
 }
