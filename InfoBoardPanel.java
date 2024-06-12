@@ -3,7 +3,7 @@
  * Write a description of class InfoBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 11/06/24
+ * @version 13/06/24
  */
 import java.awt.event.*;
 import java.awt.*;
@@ -21,15 +21,31 @@ public class InfoBoardPanel extends JPanel {
     private JLabel timerLabel = new JLabel("Time: 0");
     private Timer timer;
     private int secondsElapsed;
+    
+    // Difficulty dropdown menu
+    private JComboBox<String> difficultyComboBox;
 
-    public InfoBoardPanel() {
-        super.setLayout(new GridLayout(1, 3));
-        flagCount.setText("FLAGS LEFT: " + amountOfFlags);
-        super.add(flagCount);
-        
+    public InfoBoardPanel() 
+    {
+        super.setLayout(new GridLayout(1, 4)); // Changed to 1 row and 4 columns
+
+        // JComboBox for difficulty selection
+        String[] difficultyLevels = {"Easy", "Medium", "Hard"};
+        difficultyComboBox = new JComboBox<>(difficultyLevels);
+        difficultyComboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedDifficulty = (String) difficultyComboBox.getSelectedItem();
+                updateGameSettings(selectedDifficulty);
+            }
+        });
+        super.add(difficultyComboBox);
+
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         super.add(timerLabel);
-        
+
+        flagCount.setText("FLAGS LEFT: " + amountOfFlags);
+        super.add(flagCount);
+
         newGameButton.setText("New Game");
         newGameButton.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e)
@@ -40,7 +56,7 @@ public class InfoBoardPanel extends JPanel {
             }  
         });  
         super.add(newGameButton);
-        
+
         timer = new Timer(1000, new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -49,6 +65,23 @@ public class InfoBoardPanel extends JPanel {
                 timerLabel.setText("Time: " + secondsElapsed);
             }
         });
+    }
+    
+    private void updateGameSettings(String difficulty) 
+    {
+        switch (difficulty) {
+            case "Easy":
+                // Update game settings for easy difficulty
+                break;
+            case "Medium":
+                // Update game settings for medium difficulty
+                break;
+            case "Hard":
+                // Update game settings for hard difficulty
+                break;
+            default:
+                break;
+        }
     }
 
     public void resetFlags(int mines) {
@@ -66,7 +99,6 @@ public class InfoBoardPanel extends JPanel {
         flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Decrease flags with one
     }
     
-
     public void passPanel(MainBoardPanel panel)
     {
         this.mainPanel = panel;
