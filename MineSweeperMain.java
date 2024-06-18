@@ -1,8 +1,9 @@
+
 /**
  * Write a description of class MineSweeperMain here.
  *
  * @author Julius Gauldie
- * @version 11/06/2024
+ * @version 18/06/2024
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +19,7 @@ public class MineSweeperMain extends JFrame
     public MineSweeperMain()
     {
         Container cp = this.getContentPane();
+        setResizable(false);
         cp.setLayout(new BorderLayout());
         
         cp.add(infoBoard, BorderLayout.NORTH);

@@ -7,15 +7,14 @@
  */
 import java.util.Random;
 public class MineMap {
-    MineSweeperConstants constants = new MineSweeperConstants();
-    int ROWS = constants.ROWS;
-    int COLS = constants.COLS;
-
+    public int ROWS = 16; //Number of rows
+    public int COLS = 16; //Number of columns
+    
     int numMines; // Number of mines
     boolean[][] isMine = new boolean[ROWS][COLS]; // Array for mines
     InfoBoardPanel infoPanel;
 
-    public MineMap(InfoBoardPanel infoPanel) 
+    public MineMap(InfoBoardPanel infoPanel, int rows, int cols) 
     {
         this.infoPanel = infoPanel;
     }

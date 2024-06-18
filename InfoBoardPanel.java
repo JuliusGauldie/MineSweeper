@@ -3,7 +3,7 @@
  * Write a description of class InfoBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 13/06/24
+ * @version 18/06/24
  */
 import java.awt.event.*;
 import java.awt.*;
@@ -24,6 +24,19 @@ public class InfoBoardPanel extends JPanel {
     
     // Difficulty dropdown menu
     private JComboBox<String> difficultyComboBox;
+    
+    // Difficulty Settings
+    public static final int EASY_ROWS = 9;
+    public static final int EASY_COLS = 9;
+    public static final int EASY_MINES = 10;
+
+    public static final int MEDIUM_ROWS = 16;
+    public static final int MEDIUM_COLS = 16;
+    public static final int MEDIUM_MINES = 40;
+
+    public static final int HARD_ROWS = 16;
+    public static final int HARD_COLS = 30;
+    public static final int HARD_MINES = 99;    
 
     public InfoBoardPanel() 
     {
@@ -32,10 +45,12 @@ public class InfoBoardPanel extends JPanel {
         // JComboBox for difficulty selection
         String[] difficultyLevels = {"Easy", "Medium", "Hard"};
         difficultyComboBox = new JComboBox<>(difficultyLevels);
+        difficultyComboBox.setSelectedItem("Medium"); // Set default to Medium
         difficultyComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String selectedDifficulty = (String) difficultyComboBox.getSelectedItem();
                 updateGameSettings(selectedDifficulty);
+                stopTimer();
             }
         });
         super.add(difficultyComboBox);
@@ -71,13 +86,13 @@ public class InfoBoardPanel extends JPanel {
     {
         switch (difficulty) {
             case "Easy":
-                // Update game settings for easy difficulty
+                mainPanel.updateDifficultySettings(EASY_COLS, EASY_ROWS, EASY_MINES);
                 break;
             case "Medium":
-                // Update game settings for medium difficulty
+                mainPanel.updateDifficultySettings(MEDIUM_COLS, MEDIUM_ROWS, MEDIUM_MINES);
                 break;
             case "Hard":
-                // Update game settings for hard difficulty
+                mainPanel.updateDifficultySettings(HARD_COLS, HARD_ROWS, HARD_MINES);
                 break;
             default:
                 break;
