@@ -3,7 +3,7 @@
  * Write a description of class GameBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 18/06/24
+ * @version 20/06/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -15,9 +15,9 @@ public class MainBoardPanel extends JPanel
     public int COLS = 16; //Number of columns
     
     //Constants for UI
-    public static final int CELL_SIZE = 60; //Cell width and height
-    public int CANVAS_WIDTH = CELL_SIZE * COLS; //Game Board widht/height
-    public int CANVAS_HEIGHT = CELL_SIZE * ROWS;
+    public static final int INITIAL_CELL_SIZE = 60; //Cell width and height
+    public int CANVAS_WIDTH = INITIAL_CELL_SIZE * COLS; //Game Board widht/height
+    public int CANVAS_HEIGHT = INITIAL_CELL_SIZE * ROWS;
     
     //Mouse Variables
     CellMouseListener listener = new CellMouseListener();
@@ -75,7 +75,7 @@ public class MainBoardPanel extends JPanel
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
-        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * CELL_SIZE), (CANVAS_HEIGHT / 2) - (2  * CELL_SIZE), CELL_SIZE * 4, CELL_SIZE * 4);
+        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * INITIAL_CELL_SIZE), (CANVAS_HEIGHT / 2) - (2  * INITIAL_CELL_SIZE), INITIAL_CELL_SIZE * 4, INITIAL_CELL_SIZE * 4);
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
@@ -117,36 +117,34 @@ public class MainBoardPanel extends JPanel
         infoPanel.resetFlags(numMines);
     }
     
-    public void updateDifficultySettings(int rows, int cols, int mines)
-    {
+    public void updateDifficultySettings(int rows, int cols, int mines) {
         // Set new rows, cols and mines
         ROWS = rows;
         COLS = cols;
-            
+        numMines = mines;
+        
         // Resize Array
-        Cell[][] newCells = new Cell[ROWS][COLS];
-    
-        // Copy elements from the old array to the new array
-        int rowsToCopy = Math.min(cells.length, newCells.length);
-        int columnsToCopy = Math.min(cells[0].length, newCells[0].length);
-    
-        for (int i = 0; i < rowsToCopy; i++) {
-            for (int j = 0; j < columnsToCopy; j++) {
-                newCells[i][j] = cells[i][j];
+        cells = new Cell[ROWS][COLS];
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                cells[row][col] = new Cell(row, col);
+                cells[row][col].addMouseListener(listener);
             }
         }
-    
-        // Assign the new array back to the original array variable
-        cells = newCells;
         
         newGame();
         
+        // Calculate updated cell size
+        int maxRowsCols = Math.max(rows, cols);
+        int cellSize = INITIAL_CELL_SIZE * (16 / maxRowsCols);
+        
         // Calculate updated canvas size
-        CANVAS_WIDTH = CELL_SIZE * cols;
-        CANVAS_HEIGHT = CELL_SIZE * rows;
-        
-        super.removeAll();
-        
+        CANVAS_WIDTH = cellSize * cols;
+        CANVAS_HEIGHT = cellSize * rows;
+    
+        // Remove all components from the panel
+        removeAll();
+
         // Create game layered pane
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
@@ -156,8 +154,6 @@ public class MainBoardPanel extends JPanel
         gamePanel.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
-                cells[row][col] = new Cell(row, col);
-                cells[row][col].addMouseListener(listener);
                 gamePanel.add(cells[row][col]);
             }
         }
@@ -165,16 +161,20 @@ public class MainBoardPanel extends JPanel
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
-        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * CELL_SIZE), (CANVAS_HEIGHT / 2) - (2  * CELL_SIZE), CELL_SIZE * 4, CELL_SIZE * 4);
+        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * cellSize), (CANVAS_HEIGHT / 2) - (2  * cellSize), cellSize * 4, cellSize * 4);
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
         // Add main menu panel and game layered pane to the card layout
-        super.add(mainMenuPanel, "MainMenu");
-        super.add(layeredPane, "GamePanel");
+        add(mainMenuPanel, "MainMenu");
+        add(layeredPane, "GamePanel");
 
         // Set the preferred size of the main board panel
-        super.setSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+        setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+    
+        // Revalidate and repaint the parent container
+        getParent().revalidate();
+        getParent().repaint();
     }
     
     private int getSurroundingMines(int srcRow, int srcCol)
@@ -313,7 +313,7 @@ public class MainBoardPanel extends JPanel
         this.infoPanel = panel;
         this.main = main;
         
-        infoPanel.passPanel(this);
         mineMap = new MineMap(infoPanel, ROWS, COLS);
+        infoPanel.passPanel(this, mineMap);
     }
 }

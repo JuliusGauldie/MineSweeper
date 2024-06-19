@@ -3,7 +3,7 @@
  * Write a description of class InfoBoardPanel here.
  *
  * @author Julius Gauldie
- * @version 18/06/24
+ * @version 20/06/24
  */
 import java.awt.event.*;
 import java.awt.*;
@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 public class InfoBoardPanel extends JPanel {
     private MainBoardPanel mainPanel;
+    private MineMap mineMap;
     private JButton newGameButton = new JButton();
     
     // Flag Count
@@ -86,12 +87,15 @@ public class InfoBoardPanel extends JPanel {
     {
         switch (difficulty) {
             case "Easy":
+                mineMap.changeDifficulty(EASY_COLS, EASY_ROWS);
                 mainPanel.updateDifficultySettings(EASY_COLS, EASY_ROWS, EASY_MINES);
                 break;
             case "Medium":
+                mineMap.changeDifficulty(MEDIUM_COLS, MEDIUM_COLS);
                 mainPanel.updateDifficultySettings(MEDIUM_COLS, MEDIUM_ROWS, MEDIUM_MINES);
                 break;
             case "Hard":
+                mineMap.changeDifficulty(HARD_COLS, HARD_ROWS);
                 mainPanel.updateDifficultySettings(HARD_COLS, HARD_ROWS, HARD_MINES);
                 break;
             default:
@@ -114,9 +118,10 @@ public class InfoBoardPanel extends JPanel {
         flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Decrease flags with one
     }
     
-    public void passPanel(MainBoardPanel panel)
+    public void passPanel(MainBoardPanel panel, MineMap minePanel)
     {
         this.mainPanel = panel;
+        this.mineMap = minePanel;
     }
     
     public void startTimer()

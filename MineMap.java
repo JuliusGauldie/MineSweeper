@@ -3,7 +3,7 @@
  * Write a description of class MineMap here.
  *
  * @author Julius Gauldie
- * @version 11/06/24
+ * @version 20/06/24
  */
 import java.util.Random;
 public class MineMap {
@@ -47,17 +47,28 @@ public class MineMap {
             isMine[randomRow][randomCol] = true;
         }
         
-        for (int row = 0; row < ROWS; row++) 
-        {
-            for (int col = 0; col < COLS; col++) {
+        // Update panel with mine locations
+        int rowsToIterate = Math.min(ROWS, panel.cells.length);
+        int colsToIterate = Math.min(COLS, panel.cells[0].length);
+    
+        for (int row = 0; row < rowsToIterate; row++) {
+            for (int col = 0; col < colsToIterate; col++) {
                 panel.cells[row][col].setMine(isMine[row][col]);
             }
         }
-
         // Update Flags Info Panel
         infoPanel.resetFlags(numMines);
 
         // Reveal First Cell
         panel.revealCell(firstClickedRow, firstClickedCol);
+    }
+    
+    public void changeDifficulty(int rows, int cols)
+    {
+        ROWS = rows;
+        COLS = cols;
+        
+        // Resize Array
+        isMine = new boolean[ROWS][COLS];
     }
 }

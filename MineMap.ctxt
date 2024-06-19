@@ -4,4 +4,6 @@ comment1.params=infoPanel\ rows\ cols
 comment1.target=MineMap(InfoBoardPanel,\ int,\ int)
 comment2.params=panel\ numMines\ firstClickedRow\ firstClickedCol
 comment2.target=void\ newMineMap(MainBoardPanel,\ int,\ int,\ int)
-numComments=3
+comment3.params=rows\ cols
+comment3.target=void\ changeDifficulty(int,\ int)
+numComments=4
