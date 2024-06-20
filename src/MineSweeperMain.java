@@ -1,12 +1,11 @@
 
 /**
- * Write a description of class MineSweeperMain here.
+ * Creates main program - should be run to start game
  *
  * @author Julius Gauldie
- * @version 18/06/2024
+ * @version 20/06/2024
  */
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 public class MineSweeperMain extends JFrame
 {

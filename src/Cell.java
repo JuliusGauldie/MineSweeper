@@ -1,9 +1,9 @@
 
 /**
- * Write a description of class Cell here.
+ * Cell logic class
  *
  * @author Julius Gauldie
- * @version 18/06/24
+ * @version 20/06/24
  */
 import java.awt.Color;
 import java.awt.Font;

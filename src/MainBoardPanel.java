@@ -1,6 +1,6 @@
 
 /**
- * Write a description of class GameBoardPanel here.
+ * Logic for Main Board - Grid
  *
  * @author Julius Gauldie
  * @version 20/06/24
@@ -10,31 +10,35 @@ import java.awt.event.*;
 import javax.swing.*;
 public class MainBoardPanel extends JPanel
 {
-    //Import MineSweeper Constants
+    // Grid Variables
     public int ROWS = 16; //Number of rows
     public int COLS = 16; //Number of columns
     
-    //Constants for UI
-    public static final int INITIAL_CELL_SIZE = 60; //Cell width and height
-    public int CANVAS_WIDTH = INITIAL_CELL_SIZE * COLS; //Game Board widht/height
-    public int CANVAS_HEIGHT = INITIAL_CELL_SIZE * ROWS;
+    // UI Variables
+    public static final int CELL_SIZE = 60; //Cell width and height
+    public int CANVAS_WIDTH = CELL_SIZE * COLS; //Game Board widht/height
+    public int CANVAS_HEIGHT = CELL_SIZE * ROWS;
     
-    //Mouse Variables
+    // Mouse Variables
     CellMouseListener listener = new CellMouseListener();
     
+    // Cell Variables
     public Cell cells[][] = new Cell[ROWS][COLS];
     int numMines = 40; //Set number of mines
 
+    // Other Classes
     MineSweeperMain main;
-    InfoBoardPanel infoPanel;
+    public InfoBoardPanel infoPanel;
     private EndBoardPanel endPanel;
     private MineMap mineMap;
     private MainBoardPanel thisPanel = this;
 
+    // Game Booleans
     private boolean gameStarted = false;
-    private boolean gameOver = false;
+    public boolean gameOver = false;
     private boolean gameWon = false;
     
+    // Start Menu Variables
     private JPanel mainMenuPanel;
     private JButton startButton;
 
@@ -75,7 +79,12 @@ public class MainBoardPanel extends JPanel
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
-        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * INITIAL_CELL_SIZE), (CANVAS_HEIGHT / 2) - (2  * INITIAL_CELL_SIZE), INITIAL_CELL_SIZE * 4, INITIAL_CELL_SIZE * 4);
+        // Calculate position and size relative to the game board
+        int endPanelWidth = CELL_SIZE * 6; // Adjust width as needed
+        int endPanelHeight = CELL_SIZE * 6; // Adjust height as needed
+        int endPanelX = (CANVAS_WIDTH - endPanelWidth) / 2;
+        int endPanelY = (CANVAS_HEIGHT - endPanelHeight) / 2;
+        endPanel.setBounds(endPanelX, endPanelY, endPanelWidth, endPanelHeight);
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
@@ -89,6 +98,7 @@ public class MainBoardPanel extends JPanel
     
     public void newGame() //Reset game
     {
+        // Set endpanel to invisible
         endPanel.setVisible(false);
         repaint();
         revalidate();
@@ -134,13 +144,9 @@ public class MainBoardPanel extends JPanel
         
         newGame();
         
-        // Calculate updated cell size
-        int maxRowsCols = Math.max(rows, cols);
-        int cellSize = INITIAL_CELL_SIZE * (16 / maxRowsCols);
-        
         // Calculate updated canvas size
-        CANVAS_WIDTH = cellSize * cols;
-        CANVAS_HEIGHT = cellSize * rows;
+        CANVAS_WIDTH = CELL_SIZE * cols;
+        CANVAS_HEIGHT = CELL_SIZE * rows;
     
         // Remove all components from the panel
         removeAll();
@@ -161,12 +167,17 @@ public class MainBoardPanel extends JPanel
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
-        endPanel.setBounds((CANVAS_WIDTH / 2) - (2 * cellSize), (CANVAS_HEIGHT / 2) - (2  * cellSize), cellSize * 4, cellSize * 4);
+        endPanel.passPanel(infoPanel); // Pass infoPanel to new endPanel
+        // Calculate position and size relative to the game board
+        int endPanelWidth = CELL_SIZE * 6; // Adjust width as needed
+        int endPanelHeight = CELL_SIZE * 6; // Adjust height as needed
+        int endPanelX = (CANVAS_WIDTH - endPanelWidth) / 2;
+        int endPanelY = (CANVAS_HEIGHT - endPanelHeight) / 2;
+        endPanel.setBounds(endPanelX, endPanelY, endPanelWidth, endPanelHeight);
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
-        // Add main menu panel and game layered pane to the card layout
-        add(mainMenuPanel, "MainMenu");
+        // Add game layered pane to the card layout
         add(layeredPane, "GamePanel");
 
         // Set the preferred size of the main board panel
@@ -175,6 +186,9 @@ public class MainBoardPanel extends JPanel
         // Revalidate and repaint the parent container
         getParent().revalidate();
         getParent().repaint();
+
+        //Resize the main JFrame
+        SwingUtilities.getWindowAncestor(this).pack();
     }
     
     private int getSurroundingMines(int srcRow, int srcCol)
@@ -252,7 +266,7 @@ public class MainBoardPanel extends JPanel
                     if (sourceCell.isFlagged) //Unflag
                     {
                         sourceCell.isFlagged = false; //If flagged, unflag
-                        cells[sourceCell.row][sourceCell.col].isRevealed = false;
+                        sourceCell.setText("");
                         cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
  
                         infoPanel.increaseFlag();
@@ -260,7 +274,7 @@ public class MainBoardPanel extends JPanel
                     else //Flag
                     {
                         sourceCell.isFlagged = true; //If not flagged, flag
-                        cells[sourceCell.row][sourceCell.col].isRevealed = true;
+                        sourceCell.setText(">");
                         cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
                     
                         infoPanel.decreaseFlag();
@@ -299,13 +313,40 @@ public class MainBoardPanel extends JPanel
         repaint();
         revalidate();
         
+        // Stop timer
         infoPanel.stopTimer();
+
+        // Check if new highscore
+        infoPanel.checkHighScore();
+
+        // Pass to End Panel
+        endPanel.updateLabels(infoPanel.secondsElapsed, HighScoreManager.getHighScore(infoPanel.currentDifficulty), false);
+
     }
     
     public void gameOver()
     {
         gameOver = true;
+        
+        // Reveal all mines to player
+        for (int row = 0; row < ROWS; row++)
+        {
+            for (int col = 0; col < COLS; col++)
+            {
+                if (mineMap.isMine[row][col])
+                    cells[row][col].setText("*");
+            }
+        }
+
+        endPanel.setVisible(true);
+        repaint();
+        revalidate();
+        
+        // Stop timer
         infoPanel.stopTimer();
+
+        // Pass to End Panel
+        endPanel.updateLabels(0, HighScoreManager.getHighScore(infoPanel.currentDifficulty), true);
     }
        
     public void passPanels(InfoBoardPanel panel, MineSweeperMain main)
@@ -315,5 +356,6 @@ public class MainBoardPanel extends JPanel
         
         mineMap = new MineMap(infoPanel, ROWS, COLS);
         infoPanel.passPanel(this, mineMap);
+        endPanel.passPanel(infoPanel);
     }
 }

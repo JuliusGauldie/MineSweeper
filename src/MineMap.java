@@ -1,6 +1,6 @@
 
 /**
- * Write a description of class MineMap here.
+ * Creates randomized locations for mines
  *
  * @author Julius Gauldie
  * @version 20/06/24

@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src"
   ],
-  "SelectedNode": "\\bin",
+  "SelectedNode": "\\src\\MainBoardPanel.java",
   "PreviewInSolutionExplorer": false
 }

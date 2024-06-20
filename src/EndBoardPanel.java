@@ -1,35 +1,79 @@
 
 /**
- * Write a description of class WinPanel here.
+ * Logic for End Board - shown on win
  *
  * @author Julius Gauldie
- * @version 06/06/24
+ * @version 20/06/24
  */
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class EndBoardPanel extends JPanel {
-    private JLabel messageLabel;
+    // JLabels
+    JLabel winLabel;
+    JLabel currentTimeLabel;
+    JLabel highScoreLabel;
 
-    //Import MineSweeper Constants
-    public static final int ROWS = 10; //Number of rows
-    public static final int COLS = 10; //Number of columns
-    
-    //Constants for UI
-    public static final int CELL_SIZE = 60; //Cell width and height
-    public static final int CANVAS_WIDTH = CELL_SIZE * COLS; //Game Board widht/height
-    public static final int CANVAS_HEIGHT = CELL_SIZE * ROWS;
-    
-    public EndBoardPanel() {
-        setLayout(new BorderLayout());
+    // Button
+    private JButton restartButton;
 
-        // Create the message label
-        messageLabel = new JLabel();
-        messageLabel.setHorizontalAlignment(JLabel.CENTER);
-        messageLabel.setText("YOU WIN, CLICK NEW GAME TO START NEW GAME");
-        add(messageLabel, BorderLayout.CENTER);
+    // JPanels
+    private InfoBoardPanel infoPanel;
+    
+    public EndBoardPanel() 
+    {
+        setLayout(new GridLayout(4, 1));
+
+        // Create the win label
+        winLabel = new JLabel("", JLabel.CENTER);
+        add(winLabel);
+
+        // Create current time label
+        currentTimeLabel = new JLabel("", JLabel.CENTER);
+        add(currentTimeLabel);
+
+        // Create high score label
+        highScoreLabel = new JLabel("", JLabel.CENTER);
+        add(highScoreLabel);
+
+        // Create the restart button
+        restartButton = new JButton("New Game");
+        restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Call the restart game method in InfoBoardPanel
+                infoPanel.newGame();
+            }
+        });
+        add(restartButton);
 
         setVisible(false); // Initially hide the end panel
-        super.setPreferredSize(new Dimension(300, 300)); // Set preferred size
+        super.setPreferredSize(new Dimension(600, 600)); // Set preferred size
+    }
+
+    public void updateLabels(int currentTime, int highScore, boolean lostGame)
+    {
+        // Show if won
+        if (lostGame)
+            winLabel.setText("YOU LOSE");
+        else
+            winLabel.setText("YOU WIN");
+
+        // Show time played
+        if (lostGame)
+            currentTimeLabel.setText("Current Time: -");
+        else
+            currentTimeLabel.setText("Current Time: " + currentTime);
+
+        // Show high score
+        if (highScore != Integer.MAX_VALUE) // Check highscore is not defaulted to max
+            highScoreLabel.setText("High Score: " + highScore);
+        else
+            highScoreLabel.setText("High Score: -");
+    }
+
+    public void passPanel(InfoBoardPanel panel)
+    {
+        // Set InfoBoardPanel
+        this.infoPanel = panel;
     }
 }

@@ -1,6 +1,6 @@
 
 /**
- * Write a description of class InfoBoardPanel here.
+ * Logic for Info Board - Difficulty, Timer, Flags Left, New Game
  *
  * @author Julius Gauldie
  * @version 20/06/24
@@ -8,7 +8,6 @@
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.Timer;
 public class InfoBoardPanel extends JPanel {
     private MainBoardPanel mainPanel;
     private MineMap mineMap;
@@ -21,7 +20,10 @@ public class InfoBoardPanel extends JPanel {
     // Timer
     private JLabel timerLabel = new JLabel("Time: 0");
     private Timer timer;
-    private int secondsElapsed;
+    public int secondsElapsed;  
+
+    // High Score
+    HighScoreManager score = new HighScoreManager();
     
     // Difficulty dropdown menu
     private JComboBox<String> difficultyComboBox;
@@ -35,9 +37,12 @@ public class InfoBoardPanel extends JPanel {
     public static final int MEDIUM_COLS = 16;
     public static final int MEDIUM_MINES = 40;
 
-    public static final int HARD_ROWS = 16;
-    public static final int HARD_COLS = 30;
+    public static final int HARD_ROWS = 30;
+    public static final int HARD_COLS = 16;
     public static final int HARD_MINES = 99;    
+
+    // Current Difficulty
+    public String currentDifficulty = "Medium";
 
     public InfoBoardPanel() 
     {
@@ -66,9 +71,7 @@ public class InfoBoardPanel extends JPanel {
         newGameButton.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e)
             {  
-                mainPanel.newGame();
-                timerLabel.setText("Time: 0");
-                stopTimer();
+                newGame();
             }  
         });  
         super.add(newGameButton);
@@ -87,20 +90,30 @@ public class InfoBoardPanel extends JPanel {
     {
         switch (difficulty) {
             case "Easy":
+                currentDifficulty = "Easy";
                 mineMap.changeDifficulty(EASY_COLS, EASY_ROWS);
                 mainPanel.updateDifficultySettings(EASY_COLS, EASY_ROWS, EASY_MINES);
                 break;
             case "Medium":
+                currentDifficulty = "Medium";
                 mineMap.changeDifficulty(MEDIUM_COLS, MEDIUM_COLS);
                 mainPanel.updateDifficultySettings(MEDIUM_COLS, MEDIUM_ROWS, MEDIUM_MINES);
                 break;
             case "Hard":
+                currentDifficulty = "Hard";
                 mineMap.changeDifficulty(HARD_COLS, HARD_ROWS);
                 mainPanel.updateDifficultySettings(HARD_COLS, HARD_ROWS, HARD_MINES);
                 break;
             default:
                 break;
         }
+    }
+
+    public void newGame()
+    {
+        mainPanel.newGame();
+        timerLabel.setText("Time: 0");
+        stopTimer();
     }
 
     public void resetFlags(int mines) {
@@ -134,5 +147,15 @@ public class InfoBoardPanel extends JPanel {
     public void stopTimer()
     {
         timer.stop();
+        secondsElapsed = 0;
+        timerLabel.setText("Time: 0");
+    }
+
+    public void checkHighScore() 
+    {
+        int highScore = HighScoreManager.getHighScore(currentDifficulty);
+        if (secondsElapsed < highScore) {
+            HighScoreManager.saveHighScore(currentDifficulty, secondsElapsed);
+        }
     }
 }
