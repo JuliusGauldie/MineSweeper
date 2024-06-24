@@ -3,7 +3,7 @@
  * Logic for Main Board - Grid
  *
  * @author Julius Gauldie
- * @version 20/06/24
+ * @version 24/06/24
  */
 import java.awt.*;
 import java.awt.event.*;
@@ -15,7 +15,7 @@ public class MainBoardPanel extends JPanel
     public int COLS = 16; //Number of columns
     
     // UI Variables
-    public static final int CELL_SIZE = 60; //Cell width and height
+    public static final int CELL_SIZE = 50; //Cell width and height
     public int CANVAS_WIDTH = CELL_SIZE * COLS; //Game Board widht/height
     public int CANVAS_HEIGHT = CELL_SIZE * ROWS;
     
@@ -32,15 +32,12 @@ public class MainBoardPanel extends JPanel
     private EndBoardPanel endPanel;
     private MineMap mineMap;
     private MainBoardPanel thisPanel = this;
+    private StartMenuPanel menuPanel;
 
     // Game Booleans
     private boolean gameStarted = false;
     public boolean gameOver = false;
     private boolean gameWon = false;
-    
-    // Start Menu Variables
-    private JPanel mainMenuPanel;
-    private JButton startButton;
 
     /**
      * Constructor for objects of class GameBoardPanel
@@ -49,17 +46,8 @@ public class MainBoardPanel extends JPanel
     {
         super(new CardLayout()); // Use CardLayout for the panel
 
-        // Create main menu panel
-        mainMenuPanel = new JPanel(new BorderLayout());
-        startButton = new JButton("Start Game");
-        startButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                newGame();
-                CardLayout cl = (CardLayout) (MainBoardPanel.this.getLayout());
-                cl.show(MainBoardPanel.this, "GamePanel"); // Switch to the game panel
-            }
-        });
-        mainMenuPanel.add(startButton, BorderLayout.CENTER);
+        // Create Main Menu
+        menuPanel = new StartMenuPanel(this);
 
         // Create game layered pane
         JLayeredPane layeredPane = new JLayeredPane();
@@ -79,17 +67,12 @@ public class MainBoardPanel extends JPanel
 
         // Create and add the end panel to a higher layer
         endPanel = new EndBoardPanel();
-        // Calculate position and size relative to the game board
-        int endPanelWidth = CELL_SIZE * 6; // Adjust width as needed
-        int endPanelHeight = CELL_SIZE * 6; // Adjust height as needed
-        int endPanelX = (CANVAS_WIDTH - endPanelWidth) / 2;
-        int endPanelY = (CANVAS_HEIGHT - endPanelHeight) / 2;
-        endPanel.setBounds(endPanelX, endPanelY, endPanelWidth, endPanelHeight);
+        endPanel.setBounds((CANVAS_WIDTH - CELL_SIZE * 6) / 2, (CANVAS_HEIGHT - CELL_SIZE * 6) / 2, CELL_SIZE * 6, CELL_SIZE * 6);
         endPanel.setVisible(false);
         layeredPane.add(endPanel, JLayeredPane.PALETTE_LAYER); // Add end panel to higher layer
 
         // Add main menu panel and game layered pane to the card layout
-        super.add(mainMenuPanel, "MainMenu");
+        super.add(menuPanel, "MainMenu");
         super.add(layeredPane, "GamePanel");
 
         // Set the preferred size of the main board panel
@@ -218,6 +201,9 @@ public class MainBoardPanel extends JPanel
         
         if (numMines == 0)
         {
+            cells[srcRow][srcCol].setText("");
+            cells[srcRow][srcCol].paint();
+
             for (int row = srcRow -1; row <= srcRow + 1; row++)
             {
                 for (int col = srcCol -1; col <= srcCol + 1; col++)
@@ -242,7 +228,6 @@ public class MainBoardPanel extends JPanel
                     if (sourceCell.isMine && !sourceCell.isFlagged) //If cell is mine and not flagged
                     {
                         gameOver();
-                        sourceCell.setText("*");
                     }
                     else if (!sourceCell.isFlagged && !sourceCell.isMine)
                     {
@@ -261,12 +246,11 @@ public class MainBoardPanel extends JPanel
             }
             else if (e.getButton() == MouseEvent.BUTTON3) //Right Mouse Click
             {
-                if (!gameOver && !gameWon && gameStarted)
+                if (!gameOver && !gameWon && gameStarted && !cells[sourceCell.row][sourceCell.col].isRevealed)
                 {
                     if (sourceCell.isFlagged) //Unflag
                     {
                         sourceCell.isFlagged = false; //If flagged, unflag
-                        sourceCell.setText("");
                         cells[sourceCell.row][sourceCell.col].paint(); //Repaint Cell
  
                         infoPanel.increaseFlag();
@@ -274,35 +258,26 @@ public class MainBoardPanel extends JPanel
                     else //Flag
                     {
                         sourceCell.isFlagged = true; //If not flagged, flag
-                        sourceCell.setText(">");
                         cells[sourceCell.row][sourceCell.col].paint(); //Repaint cell
                     
                         infoPanel.decreaseFlag();
                     }
                 }
             }
-            else if (e.getButton() == MouseEvent.BUTTON2) //Middle Mouse Button Click
+            
+            // Win Condition
+            boolean allRevealed = true;
+
+            for (int row = 0; row < ROWS; row++)
             {
-                if (!gameWon) gameWin();
+                for (int col = 0; col < COLS; col++)
+                {
+                    if (!cells[row][col].isRevealed && !mineMap.isMine[row][col]) // If not revealed && not a mine
+                        allRevealed = false;
+                }
             }
             
-            if (infoPanel.amountOfFlags == 0) //Win Condition
-            {
-                boolean allRevealed = true;
-                
-                for (int row = 0; row < ROWS; row++)
-                {
-                    for (int col = 0; col < COLS; col++)
-                    {
-                        if (!cells[row][col].isRevealed)
-                        {
-                            allRevealed = false;
-                        }
-                    }
-                }
-                
-                if (allRevealed) gameWin();
-            }
+            if (allRevealed) gameWin(); // If all safe cells are revealed
         }
     }
     
@@ -313,17 +288,16 @@ public class MainBoardPanel extends JPanel
         repaint();
         revalidate();
         
-        // Stop timer
-        infoPanel.stopTimer();
-
         // Check if new highscore
         infoPanel.checkHighScore();
 
         // Pass to End Panel
         endPanel.updateLabels(infoPanel.secondsElapsed, HighScoreManager.getHighScore(infoPanel.currentDifficulty), false);
 
+        // Stop timer
+        infoPanel.stopTimer();
     }
-    
+     
     public void gameOver()
     {
         gameOver = true;
@@ -333,8 +307,13 @@ public class MainBoardPanel extends JPanel
         {
             for (int col = 0; col < COLS; col++)
             {
-                if (mineMap.isMine[row][col])
-                    cells[row][col].setText("*");
+                if (cells[row][col].isMine && !cells[row][col].isFlagged) // If a mine and is not revealed or flagged
+                    cells[row][col].isRevealed = true;
+
+                if (cells[row][col].isFlagged && !cells[row][col].isMine) // If flagged but not a mine
+                    cells[row][col].isCrossed = true;
+
+                cells[row][col].paint();
             }
         }
 

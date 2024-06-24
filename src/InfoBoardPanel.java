@@ -3,7 +3,7 @@
  * Logic for Info Board - Difficulty, Timer, Flags Left, New Game
  *
  * @author Julius Gauldie
- * @version 20/06/24
+ * @version 24/06/24
  */
 import java.awt.event.*;
 import java.awt.*;
@@ -57,6 +57,8 @@ public class InfoBoardPanel extends JPanel {
                 String selectedDifficulty = (String) difficultyComboBox.getSelectedItem();
                 updateGameSettings(selectedDifficulty);
                 stopTimer();
+                secondsElapsed = 0;
+                timerLabel.setText("Time: 0");
             }
         });
         super.add(difficultyComboBox);
@@ -147,8 +149,6 @@ public class InfoBoardPanel extends JPanel {
     public void stopTimer()
     {
         timer.stop();
-        secondsElapsed = 0;
-        timerLabel.setText("Time: 0");
     }
 
     public void checkHighScore() 
