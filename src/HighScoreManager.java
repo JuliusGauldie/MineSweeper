@@ -1,17 +1,25 @@
 /**
- * Check and store high scores
+ * Manages and stores high score 
  *
+ * Original concept by Robert Donner and Curt Johnson, 1989.
  * @author Julius Gauldie
- * @version 20/06/24
+ * @version 29/06/24
  */
 import java.io.*;
 import java.nio.file.*;
 
 public class HighScoreManager {
+    // Names of text files
     private static final String EASY_HIGH_SCORE_FILE = "easy_highscore.txt";
     private static final String MEDIUM_HIGH_SCORE_FILE = "medium_highscore.txt";
     private static final String HARD_HIGH_SCORE_FILE = "hard_highscore.txt";
 
+    /**
+     * Retrieves the high score for the specified difficulty.
+     * 
+     * @param difficulty The difficulty level ("easy", "medium", "hard").
+     * @return The high score for the specified difficulty, or Integer.MAX_VALUE if no previous score is found.
+     */
     public static int getHighScore(String difficulty) {
         int highScore = Integer.MAX_VALUE; // Initialize with a high value
         String highScoreFile = getHighScoreFile(difficulty);
@@ -31,6 +39,12 @@ public class HighScoreManager {
         return highScore;
     }
 
+    /**
+     * Saves the new high score for the specified difficulty.
+     * 
+     * @param difficulty The difficulty level ("easy", "medium", "hard").
+     * @param newHighScore The new high score to be saved.
+     */
     public static void saveHighScore(String difficulty, int newHighScore) {
         String highScoreFile = getHighScoreFile(difficulty);
 
@@ -40,7 +54,14 @@ public class HighScoreManager {
             e.printStackTrace();
         }
     }
-
+    
+    /**
+     * Returns the file for the high score file for a certain difficulty.
+     * 
+     * @param difficulty The difficulty level ("easy", "medium", "hard").
+     * @return The file path for the high score file.
+     * @throws IllegalArgumentException if the difficulty is unsupported.
+     */
     private static String getHighScoreFile(String difficulty) {
         switch (difficulty.toLowerCase()) {
             case "easy":

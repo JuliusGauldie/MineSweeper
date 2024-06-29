@@ -2,11 +2,12 @@
 /**
  * Logic for Info Board - Difficulty, Timer, Flags Left, New Game
  *
+ * Original concept by Robert Donner and Curt Johnson, 1989.
  * @author Julius Gauldie
- * @version 24/06/24
+ * @version 29/06/24
  */
 import java.awt.event.*;
-import java.awt.*;
+import java.awt.*; 
 import javax.swing.*;
 public class InfoBoardPanel extends JPanel {
     private MainBoardPanel mainPanel;
@@ -42,11 +43,17 @@ public class InfoBoardPanel extends JPanel {
     public static final int HARD_MINES = 99;    
 
     // Current Difficulty
-    public String currentDifficulty = "Medium";
+    public String currentDifficulty = "Medium"; // Set default to medium
 
+    // Accesibility Options
+    public boolean bigMode = false;
+
+    /**
+     * Constructor for InfoBoardPanel class.
+     */
     public InfoBoardPanel() 
     {
-        super.setLayout(new GridLayout(1, 4)); // Changed to 1 row and 4 columns
+        super.setLayout(new GridLayout(1, 5)); 
 
         // JComboBox for difficulty selection
         String[] difficultyLevels = {"Easy", "Medium", "Hard"};
@@ -55,29 +62,35 @@ public class InfoBoardPanel extends JPanel {
         difficultyComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String selectedDifficulty = (String) difficultyComboBox.getSelectedItem();
-                updateGameSettings(selectedDifficulty);
+                updateGameSettings(selectedDifficulty); // If new difficulty selected, update difficulty 
                 stopTimer();
                 secondsElapsed = 0;
-                timerLabel.setText("Time: 0");
+                timerLabel.setText("Time: 0"); // Reset timer
             }
         });
         super.add(difficultyComboBox);
 
+        // Set timer label
         timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timerLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
         super.add(timerLabel);
 
+        // Set flag counter label
         flagCount.setText("FLAGS LEFT: " + amountOfFlags);
+        flagCount.setFont(new Font("Dialog", Font.PLAIN, 14));
         super.add(flagCount);
 
+        // New Game button
         newGameButton.setText("New Game");
         newGameButton.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e)
             {  
-                newGame();
+                newGame(); // Start new game
             }  
         });  
         super.add(newGameButton);
 
+        // Timer setup
         timer = new Timer(1000, new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -87,7 +100,29 @@ public class InfoBoardPanel extends JPanel {
             }
         });
     }
-    
+
+    /**
+     * Updates the font size of flag and timer labels based on bigMode setting.
+     * 
+     * @param isSelected Boolean indicating if bigMode is selected.
+     */
+    public void updateFontSize(Boolean isSelected) {
+        bigMode = isSelected;
+
+        // Adjust font size based on bigMode
+        int fontSize = bigMode ? 20 : 15; // Change font size to 20 if bigMode is true
+        Font font = new Font("Dialog", Font.PLAIN, fontSize);
+
+        // Update labels with new font
+        timerLabel.setFont(font);
+        flagCount.setFont(font);
+    }
+
+    /**
+     * Updates game settings based on selected difficulty.
+     * 
+     * @param difficulty String representing the selected difficulty.
+     */
     private void updateGameSettings(String difficulty) 
     {
         switch (difficulty) {
@@ -111,6 +146,9 @@ public class InfoBoardPanel extends JPanel {
         }
     }
 
+    /**
+     * Starts a new game.
+     */
     public void newGame()
     {
         mainPanel.newGame();
@@ -118,27 +156,47 @@ public class InfoBoardPanel extends JPanel {
         stopTimer();
     }
 
+    /**
+     * Resets the flag count for a new game.
+     * 
+     * @param mines Number of mines in the game.
+     */
     public void resetFlags(int mines) {
         amountOfFlags = mines;
-        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Reset flags for new game
+        flagCount.setText("Flags Left: " + amountOfFlags); // Reset flags for new game
     }
 
+    /**
+     * Increases the flag count.
+     */
     public void increaseFlag() {
         amountOfFlags++;
-        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Increase flags with one
+        flagCount.setText("Flags Left: " + amountOfFlags); // Increase flags with one
     }
 
+    /**
+     * Decreases the flag count.
+     */
     public void decreaseFlag() {
         amountOfFlags--;
-        flagCount.setText("FLAGS LEFT: " + amountOfFlags); // Decrease flags with one
+        flagCount.setText("Flags Left: " + amountOfFlags); // Decrease flags with one
     }
     
+    /**
+     * Passes the main panel and mine map to this class for interaction.
+     * 
+     * @param panel MainBoardPanel instance.
+     * @param minePanel MineMap instance.
+     */
     public void passPanel(MainBoardPanel panel, MineMap minePanel)
     {
         this.mainPanel = panel;
         this.mineMap = minePanel;
     }
     
+    /**
+     * Starts the game timer.
+     */
     public void startTimer()
     {
         secondsElapsed = 0;
@@ -146,11 +204,17 @@ public class InfoBoardPanel extends JPanel {
         timer.start();
     }
     
+    /**
+     * Stops the game timer.
+     */
     public void stopTimer()
     {
         timer.stop();
     }
 
+    /**
+     * Checks if the current game time is a new high score and saves it if true.
+     */
     public void checkHighScore() 
     {
         int highScore = HighScoreManager.getHighScore(currentDifficulty);
